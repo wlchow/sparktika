@@ -1,0 +1,121 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.cloudera.se.wchow.sparktika</groupId>
+  <artifactId>sparktika</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <inceptionYear>2008</inceptionYear>
+
+    <properties>
+      <scala.version>2.11.11</scala.version>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <repositories>
+      <repository>
+        <id>cloudera</id>
+        <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+      </repository>
+    </repositories>
+
+    <dependencies>
+      <dependency>
+        <groupId>org.scala-lang</groupId>
+        <artifactId>scala-library</artifactId>
+        <version>${scala.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.spark</groupId>
+        <artifactId>spark-core_2.11</artifactId>
+        <version>2.2.0.cloudera1</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.scala-tools</groupId>
+        <artifactId>maven-scala-plugin</artifactId>
+        <version>2.15.2</version>
+      </dependency>
+
+      <!-- With Tika version 1.16, it uses org.apache.commons 1.14 I got this error:
+        java.lang.NoSuchMethodError: org.apache.commons.compress.archivers.ArchiveStreamFactory.detect(Ljava/io/InputStream;)Ljava/lang/String;
+    	    at org.apache.tika.parser.pkg.ZipContainerDetector.detectArchiveFormat(ZipContainerDetector.java:114)
+    	    at org.apache.tika.parser.pkg.ZipContainerDetector.detect(ZipContainerDetector.java:85)
+    	    at org.apache.tika.detect.CompositeDetector.detect(CompositeDetector.java:77)
+    	    at org.apache.tika.parser.AutoDetectParser.parse(AutoDetectParser.java:115)
+
+           With Tika version 1.15, it uses org.apache.commons 1.13 I got this error:
+        java.lang.NoSuchMethodError: org.apache.commons.compress.utils.IOUtils.readFully(Ljava/io/InputStream;[B)I
+        	at org.apache.tika.parser.pkg.TikaArchiveStreamFactory.detect(TikaArchiveStreamFactory.java:472)
+         	at org.apache.tika.parser.pkg.ZipContainerDetector.detectArchiveFormat(ZipContainerDetector.java:112)
+        	at org.apache.tika.parser.pkg.ZipContainerDetector.detect(ZipContainerDetector.java:83)
+       	    at org.apache.tika.detect.CompositeDetector.detect(CompositeDetector.java:77)
+        	at org.apache.tika.parser.AutoDetectParser.parse(AutoDetectParser.java:115)
+
+           With Tika version 1.14, it uses org.apache.commons 1.12 and I don't get errors
+      -->
+      <dependency>
+        <groupId>org.apache.tika</groupId>
+        <artifactId>tika-core</artifactId>
+        <version>1.14</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.tika</groupId>
+        <artifactId>tika-parsers</artifactId>
+        <version>1.14</version>
+      </dependency>
+
+    </dependencies>
+
+
+
+    <build>
+      <plugins>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.0.0</version>
+          <configuration>
+            <filters>
+              <filter>
+                <artifact>*:*</artifact>
+                <excludes>
+                  <exclude>META-INF/*.SF</exclude>
+                  <exclude>META-INF/*.DSA</exclude>
+                  <exclude>META-INF/*.RSA</exclude>
+                </excludes>
+              </filter>
+            </filters>
+          </configuration>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>shade</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>org.scala-tools</groupId>
+          <artifactId>maven-scala-plugin</artifactId>
+          <version>2.15.2</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>compile</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+
+      </plugins>
+    </build>
+
+</project>
+
